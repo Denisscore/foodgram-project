@@ -27,15 +27,7 @@ def _create_recipe(author, name, tag):
 
 
 class UserFactory(factory.Factory):
-    """
-    Класс Factory.
-
-    Класс для создания пользователей через библиотеку Factory Boy.
-    """
-
     class Meta:
-        """Модель экземпляры которой создаем."""
-
         model = User
 
     username = 'Test user'
@@ -45,30 +37,17 @@ class UserFactory(factory.Factory):
 
 
 def _create_user(**kwargs):
-    """Создаем пользователя."""
     user = UserFactory.create(**kwargs)
     user.save()
     return user
 
 
 class TestPageHeader(TestCase):
-    """
-    Тесты для шапки страницы.
-
-    Для неавторизованного пользователя проверяет, что в шапке страницы есть
-    меню для авторизации и нет для создания рецепта.
-    Для авторизованного пользователя проверяет, что в шапке нет пункта
-    авторизации, но есть для изменения пароля, появился пункт создания рецепта
-    и счетчик количества рецептов в списке покупок.
-    """
-
     def setUp(self):
-        """Подготовка тестового окружения."""
         self.client = Client()
         self.user = _create_user()
 
     def test_not_auth_user(self):
-        """Тест не авторизированного пользователя."""
         response = self.client.get(reverse('index_view'))
         self.assertEqual(
             response.status_code, 200,
@@ -85,7 +64,6 @@ class TestPageHeader(TestCase):
                  ' пункта Создать рецепт'))
 
     def test_auth_user(self):
-        """Тест авторизированного пользователя."""
         self.client.force_login(self.user)
         response = self.client.get(reverse('index_view'))
         html = f'<a href="{reverse("login")}" class="nav__link link">Войти'
@@ -109,15 +87,7 @@ class TestPageHeader(TestCase):
 
 
 class TestTagFilter(TestCase):
-    """
-    Тесты для фильтрации по тегам.
-
-    Проверяет работу фильтров по тегам на главной странице,
-    странице профиля и избранного.
-    """
-
     def setUp(self):
-        """Подготовка тестового окружения."""
         self.client = Client()
         self.user = _create_user()
         self.client.force_login(self.user)
@@ -131,7 +101,6 @@ class TestTagFilter(TestCase):
                 _create_recipe(self.user, f'recipe {i}', tag1)
 
     def test_filter(self):
-        """Тест фильтров."""
         urls = [
             f'{reverse("index_view")}?tag=lunch',
             f'{reverse("index_view")}?tag=lunch&page=2',
@@ -157,17 +126,7 @@ class TestTagFilter(TestCase):
 
 
 class TestProfilePage(TestCase):
-    """
-    Тесты для страницы профиля.
-
-    Для неавторизованного пользователя проверяет, что страница доступна и на
-    ней нет кнопки подписки.
-    Для авторизованного пользователя проверяет, что в своем профиле нет кнопки
-    подписке, а на чужом есть.
-    """
-
     def setUp(self):
-        """Подготовка тестового окружения."""
         self.client = Client()
         self.user = _create_user()
         self.user2 = _create_user(username='Another test user',
@@ -176,7 +135,6 @@ class TestProfilePage(TestCase):
                                   first_name='Another test user first_name')
 
     def test_not_auth_user(self):
-        """Тест не авторизированного пользователя."""
         response = self.client.get(
             reverse('profile_view', args=[self.user.id]))
         self.assertEqual(
@@ -189,7 +147,6 @@ class TestProfilePage(TestCase):
                  ' кнопки подписки'))
 
     def test_auth_user(self):
-        """Тест авторизированного пользователя."""
         self.client.force_login(self.user)
         response = self.client.get(
             reverse('profile_view', args=[self.user.id]))
@@ -211,20 +168,7 @@ class TestProfilePage(TestCase):
 
 
 class TestRecipePage(TestCase):
-    """
-    Тесты страницы отдельного рецепта.
-
-    Для неавторизованного пользователя проверяет, что страница доступна; на
-    странице отсутствуют кнопки добавления в избранное, список покупок и
-    подписки.
-    Для авторизованного пользователя проверяет, что на странице появляются
-    кнопки добавления в ибранное и список покупок; на странице своего рецепта
-    есть кнопка редактирования и нет кнопки добавления в подписки, а на
-    странице чужого рецепта появляется кнопка подписки.
-    """
-
     def setUp(self):
-        """Подготовка тестового окружения."""
         self.client = Client()
         self.user = _create_user()
         self.user2 = _create_user(username='Another test user',
@@ -236,7 +180,6 @@ class TestRecipePage(TestCase):
         self.recipe2 = _create_recipe(self.user2, 'Another recipe', tag)
 
     def test_not_auth_user(self):
-        """Тест не авторизированного пользователя."""
         response = self.client.get(
             reverse('recipe_view', args=[self.recipe.id]))
         self.assertEqual(
@@ -256,7 +199,6 @@ class TestRecipePage(TestCase):
                      'неавторизованного пользователя'))
 
     def test_auth_user(self):
-        """Тест авторизированного пользователя."""
         self.client.force_login(self.user)
         response1 = self.client.get(
             reverse('recipe_view', args=[self.recipe.id]))
@@ -281,9 +223,6 @@ class TestRecipePage(TestCase):
             'Редактировать рецепт', response1.content.decode(),
             msg='На странице своего рецепта должна быть кнопка редактировать'),
         elements.append(['подписка на автора', 'name="subscribe"'])
-
-        """Запрос на страницу чужого рецепта"""
-
         response2 = self.client.get(
             reverse('recipe_view', args=[self.recipe2.id]))
         self.assertEqual(
@@ -300,17 +239,7 @@ class TestRecipePage(TestCase):
 
 
 class TestFavoritePage(TestCase):
-    """
-    Тесты страницы избранного.
-
-    Для неавторизованного пользователя проверяет, что страница недоступна и
-    пользователь перенаправляется на страницу входа.
-    Для авторизованного пользователя проверяется, что страница доступна и что
-    на странице присутствует рецепт добавленный в избранное
-    """
-
     def setUp(self):
-        """Подготовка тестового окружения."""
         self.client = Client()
         self.user = _create_user()
         tag = Tag.objects.create(name='завтрак', slug='breakfast')
@@ -321,7 +250,6 @@ class TestFavoritePage(TestCase):
         favorite.recipes.add(Recipe.recipes.get(id=1))
 
     def test_not_auth_user(self):
-        """Тест не авторизированного пользователя."""
         response = self.client.get(reverse('favorite_view'), follow=True)
         redirect_url = f'{reverse("login")}?next={reverse("favorite_view")}'
         self.assertRedirects(
@@ -332,7 +260,6 @@ class TestFavoritePage(TestCase):
                        'страницу входа')
 
     def test_auth_user(self):
-        """Тест авторизированного пользователя."""
         self.client.force_login(self.user)
         response = self.client.get(reverse('favorite_view'), follow=True)
         self.assertEqual(
@@ -348,17 +275,7 @@ class TestFavoritePage(TestCase):
 
 
 class TestSubscriptionPage(TestCase):
-    """
-    Тесты страницы подписок.
-
-    Для неавторизованного пользователя проверяет, что страница недоступна и
-    пользователь перенаправляется на страницу входа.
-    Для авторизованного пользователя проверяется, что страница доступна и что
-    на странице присутствует автор добавленный в подписки.
-    """
-
     def setUp(self):
-        """Подготовка тестового окружения."""
         self.client = Client()
         self.user = _create_user()
         self.user2 = _create_user(username='Another test user',
@@ -370,7 +287,6 @@ class TestSubscriptionPage(TestCase):
         Subscription.objects.create(user=self.user2, author=self.user)
 
     def test_not_auth_user(self):
-        """Тест не авторизированного пользователя."""
         response = self.client.get(reverse('subscriptions'), follow=True)
         redirect_url = f'{reverse("login")}?next={reverse("subscriptions")}'
         self.assertRedirects(
@@ -380,7 +296,6 @@ class TestSubscriptionPage(TestCase):
                        ' юзера должно перенаправлять на страницу входа')
 
     def test_auth_user(self):
-        """Тест авторизированного пользователя."""
         self.client.force_login(self.user2)
         response = self.client.get(reverse('followers_view'), follow=True)
         self.assertEqual(
@@ -392,17 +307,7 @@ class TestSubscriptionPage(TestCase):
 
 
 class TestPurchasePage(TestCase):
-    """
-    Тесты страницы покупок.
-
-    Для неавторизованного пользователя проверяет, что страница недоступна и
-    пользователь перенаправляется на страницу входа.
-    Для авторизованного пользователя проверяется, что страница доступна и что
-    на странице присутствует рецепт добавленный в покупки.
-    """
-
     def setUp(self):
-        """Подготовка тестового окружения."""
         self.client = Client()
         self.user = _create_user()
         tag = Tag.objects.create(name='завтрак', slug='breakfast')
@@ -412,7 +317,6 @@ class TestPurchasePage(TestCase):
         purchase.recipes.add(self.recipe)
 
     def test_not_auth_user(self):
-        """Тест не авторизированного пользователя."""
         response = self.client.get(reverse('purchases_view'), follow=True)
         redirect_url = f'{reverse("login")}?next={reverse("purchases_view")}'
         self.assertRedirects(
@@ -423,7 +327,6 @@ class TestPurchasePage(TestCase):
                        'страницу входа')
 
     def test_auth_user(self):
-        """Тест авторизированного пользователя."""
         self.client.force_login(self.user)
         response = self.client.get(reverse('purchases_view'), follow=True)
         self.assertEqual(
@@ -435,17 +338,7 @@ class TestPurchasePage(TestCase):
 
 
 class TestIngredientQuery(TestCase):
-    """
-    Тесты запросов ингридиентов.
-
-    Для неавторизованного пользователя проверяет, что страница недоступна и
-    пользователь перенаправляется на страницу входа.
-    Для авторизованного пользователя проверяется, что страница доступна и что
-    возвращается ответ в правильном формате JSON.
-    """
-
     def setUp(self):
-        """Подготовка тестового окружения."""
         self.client = Client()
         self.user = _create_user()
         with open('recipes/fixtures/ingredients.csv') as isfile:
@@ -455,7 +348,6 @@ class TestIngredientQuery(TestCase):
                 Product.objects.get_or_create(title=title, unit=unit)
 
     def test_not_auth_user(self):
-        """Тест не авторизированного пользователя."""
         response = self.client.get(f'{reverse("ingredients")}?query=хл',
                                    follow=True)
         redirect_url = f'{reverse("login")}?next={reverse("ingredients")}' \
@@ -466,7 +358,6 @@ class TestIngredientQuery(TestCase):
                                         'перенаправлять на страницу входа')
 
     def test_auth_user(self):
-        """Тест авторизированного пользователя."""
         self.client.force_login(self.user)
         query = 'чай'
         response = self.client.get(f'{reverse("ingredients")}?query={query}',
@@ -489,17 +380,7 @@ class TestIngredientQuery(TestCase):
 
 
 class TestFavoriteButton(TestCase):
-    """
-    Тесты страницы избранное.
-
-    Для неавторизованного пользователя проверяет, что страница недоступна и
-    пользователь перенаправляется на страницу входа.
-    Для авторизованного пользователя проверяется, что страница доступна и что
-    добавление и удаление рецепта происходит корректно.
-    """
-
     def setUp(self):
-        """Подготовка тестового окружения."""
         self.client = Client()
         self.user = _create_user()
         tag = Tag.objects.create(name='завтрак', slug='breakfast')
@@ -507,7 +388,6 @@ class TestFavoriteButton(TestCase):
         self.data = {'id': f'{self.recipe.id}'}
 
     def test_not_auth_user(self):
-        """Тест не авторизированного пользователя."""
         response = self.client.post(
             reverse('favorite_view'), data=self.data,
             content_type='application/json', follow=True)
@@ -528,7 +408,6 @@ class TestFavoriteButton(TestCase):
                                         ' перенаправлять на страницу входа')
 
     def test_auth_user_add(self):
-        """Тест авторизированного пользователя. Добавление."""
         self.client.force_login(self.user)
         response = self.client.post(
             reverse('favorite_view'), data=self.data,
@@ -555,7 +434,6 @@ class TestFavoriteButton(TestCase):
                          msg='Не должна создаваться повторная запись в бд')
 
     def test_auth_user_delete(self):
-        """Тест авторизированного пользователя. Удаление."""
         self.client.force_login(self.user)
         self.client.post(
             reverse('favorite_view'), data=self.data,
@@ -584,17 +462,7 @@ class TestFavoriteButton(TestCase):
 
 
 class TestSubscriptionButton(TestCase):
-    """
-    Тесты страницы мои подписки.
-
-    Для неавторизованного пользователя проверяет, что страница недоступна и
-    пользователь перенаправляется на страницу входа.
-    Для авторизованного пользователя проверяется, что страница доступна и что
-    добовление и удаление подписки на автора происходит корректно.
-    """
-
     def setUp(self):
-        """Подготовка тестового окружения."""
         self.client = Client()
         self.user = _create_user()
         self.user2 = _create_user(username='Another test user',
@@ -604,7 +472,6 @@ class TestSubscriptionButton(TestCase):
         self.data = {'id': f'{self.user2.id}'}
 
     def test_not_auth_user(self):
-        """Тест не авторизированного пользователя."""
         response = self.client.post(
             reverse('subscriptions'), data=self.data,
             content_type='application/json', follow=True)
@@ -625,7 +492,6 @@ class TestSubscriptionButton(TestCase):
                                         'перенаправлять на страницу входа')
 
     def test_auth_user_add(self):
-        """Тест авторизированного пользователя. Добавление."""
         self.client.force_login(self.user)
         response = self.client.post(
             reverse('subscriptions'), data=self.data,
@@ -652,7 +518,6 @@ class TestSubscriptionButton(TestCase):
                          msg='Не должна создаваться повторная запись в бд')
 
     def test_auth_user_delete(self):
-        """Тест авторизированного пользователя. Удаление."""
         self.client.force_login(self.user)
         self.client.post(
             reverse('subscriptions'), data=self.data,
@@ -680,17 +545,7 @@ class TestSubscriptionButton(TestCase):
 
 
 class TestPurchaseButton(TestCase):
-    """
-    Тесты страницы список покупок.
-
-    Для неавторизованного пользователя проверяет, что страница недоступна и
-    пользователь перенаправляется на страницу входа.
-    Для авторизованного пользователя проверяется, что страница доступна и что
-    добовление и удаление рецепта в список покупок происходит корректно.
-    """
-
     def setUp(self):
-        """Подготовка тестового окружения."""
         self.client = Client()
         self.user = _create_user()
         tag = Tag.objects.create(name='завтрак', slug='breakfast')
@@ -698,7 +553,6 @@ class TestPurchaseButton(TestCase):
         self.data = {'id': f'{self.recipe.id}'}
 
     def test_not_auth_user(self):
-        """Тест не авторизированного пользователя."""
         response = self.client.post(
             reverse('purchases_view'), data=self.data,
             content_type='application/json', follow=True)
@@ -720,7 +574,6 @@ class TestPurchaseButton(TestCase):
                                  'страницу входа'))
 
     def test_auth_user_add(self):
-        """Тест авторизированного пользователя. Добавление."""
         self.client.force_login(self.user)
         response = self.client.post(
             reverse('purchases_view'), data=self.data,
@@ -746,7 +599,6 @@ class TestPurchaseButton(TestCase):
                          msg='Не должна создаваться повторная запись в бд')
 
     def test_auth_user_delete(self):
-        """Тест авторизированного пользователя. Удаление."""
         self.client.force_login(self.user)
         self.client.post(reverse('purchases_view'), data=self.data,
                          content_type='application/json', follow=True)

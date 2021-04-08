@@ -20,16 +20,12 @@ from users.models import Subscription, User
 
 
 class IndexView(View):
-    """Главная страница сайта."""
-
     def get_queryset(self, request):
-        """Запрос для главной страницы."""
         tags = request.GET.getlist('tag')
         recipes = Recipe.recipes.tag_filter(tags)
         return recipes
 
     def get(self, request):
-        """Для главной страница сайта доступен только метод GET."""
         recipes = self.get_queryset(request)
         paginator = Paginator(recipes, RECIPES_ON_PAGE)
         page_number = request.GET.get('page')
@@ -45,7 +41,6 @@ class IndexView(View):
 @login_required(login_url='login')
 @require_http_methods(['GET', 'POST'])
 def new_recipe_view(request):
-    """Создание нового рецепта."""
     form = RecipeForm(request.POST or None, files=request.FILES or None)
     if form.is_valid():
         recipe = form.save(commit=False)
@@ -65,13 +60,6 @@ def new_recipe_view(request):
 
 @method_decorator(login_required, name='dispatch')
 class GetIngredients(View):
-    """
-    Запрос в базу.
-
-    Получает из request строку запроса. Выполняет поиск в базе ингредиентов
-    по их названию. Возвращает JSON.
-    """
-
     def get(self, request):
         """Метод get."""
         query = unquote(request.GET.get('query'))
@@ -82,16 +70,12 @@ class GetIngredients(View):
 
 
 class ProfileView(View):
-    """Станица с рецептами одного автора."""
-
     def get_queryset(self, request):
-        """Запрос для страницы автора."""
         tags = request.GET.getlist('tag')
         recipes = Recipe.recipes.tag_filter(tags)
         return recipes
 
     def get(self, request, user_id):
-        """Для станица с рецептами одного автора доступен только метод GET."""
         recipes = self.get_queryset(request)
         author = get_object_or_404(User, id=user_id)
         paginator = Paginator(recipes.filter(author=author), RECIPES_ON_PAGE)
@@ -106,7 +90,6 @@ class ProfileView(View):
 
 @require_http_methods(["GET"])
 def recipe_item_view(request, recipe_id):
-    """Страница с одним рецептом."""
     recipe = get_object_or_404(Recipe, id=recipe_id)
     context = {
         'recipe': recipe,
@@ -117,7 +100,6 @@ def recipe_item_view(request, recipe_id):
 @login_required(login_url='login')
 @require_http_methods(['GET', 'POST'])
 def recipe_edit_view(request, recipe_id):
-    """Страница редактирования рецепта."""
     recipe = get_object_or_404(Recipe, id=recipe_id)
     if request.user != recipe.author:
         return redirect('recipe_view', recipe_id=recipe_id)
@@ -150,7 +132,6 @@ def recipe_edit_view(request, recipe_id):
 @login_required(login_url='login')
 @require_http_methods(["GET"])
 def recipe_delete(request, recipe_id):
-    """Удаление рецепта."""
     recipe = get_object_or_404(Recipe, id=recipe_id)
     recipe.delete()
     return redirect('index_view')
@@ -158,10 +139,7 @@ def recipe_delete(request, recipe_id):
 
 @method_decorator(login_required, name='dispatch')
 class FollowersView(View):
-    """Страница мои подписки."""
-
     def get(self, request):
-        """Метод get."""
         subscriptions = Subscription.objects.filter(
             user=request.user).order_by('pk')
         page_num = request.GET.get('page')
@@ -177,10 +155,7 @@ class FollowersView(View):
 
 @method_decorator(login_required, name='dispatch')
 class SubscriptionDelete(View):
-    """Отписка от подписки на автора."""
-
     def delete(self, request, author_id):
-        """Метод delete."""
         author = get_object_or_404(User, id=author_id)
         follow = Subscription.objects.filter(user=request.user,
                                              author=author)
@@ -194,10 +169,7 @@ class SubscriptionDelete(View):
 
 @method_decorator(login_required, name='dispatch')
 class FavoriteView(View):
-    """Класс для страницы избранное."""
-
     def get(self, request):
-        """Страница избранное."""
         tags = request.GET.getlist('tag')
         user = request.user
         recipes = Favorite.favorite.get_tag_filtered(user, tags)
@@ -211,7 +183,6 @@ class FavoriteView(View):
         return render(request, 'recipes/indexAuth.html', context)
 
     def post(self, request):
-        """Добавление рецепта в избранные."""
         json_data = json.loads(request.body.decode())
         recipe_id = json_data['id']
         recipe = get_object_or_404(Recipe, id=recipe_id)
@@ -227,8 +198,6 @@ class FavoriteView(View):
 
 @method_decorator(login_required, name='dispatch')
 class FavoriteDelete(View):
-    """Удаление рецепта из избранного."""
-
     def delete(self, request, recipe_id):
         """Метод delete."""
         recipe = get_object_or_404(Recipe, id=recipe_id)
@@ -243,10 +212,7 @@ class FavoriteDelete(View):
 
 @method_decorator(login_required, name='dispatch')
 class PurchaseView(View):
-    """Страница списка покупок. Добавление рецепта в список покупок."""
-
     def get(self, request):
-        """Метод get."""
         recipes = Purchase.purchase.get_purchases_list(request.user)
         context = {
             'recipes': recipes,
@@ -255,7 +221,6 @@ class PurchaseView(View):
         return render(request, 'recipes/shopList.html', context)
 
     def post(self, request):
-        """Добавление рецепта в список покупок."""
         json_data = json.loads(request.body.decode())
         recipe_id = json_data['id']
         recipe = get_object_or_404(Recipe, id=recipe_id)
@@ -272,10 +237,7 @@ class PurchaseView(View):
 
 @method_decorator(login_required, name='dispatch')
 class PurchaseDelete(View):
-    """Удаление рецепта из списка покупок."""
-
     def delete(self, request, recipe_id):
-        """Метод delete."""
         recipe = get_object_or_404(Recipe, id=recipe_id)
         data = {'success': True}
         try:
@@ -290,10 +252,7 @@ class PurchaseDelete(View):
 
 @method_decorator(login_required, name='dispatch')
 class SendShopList(View):
-    """Сохранение списка покупок."""
-
     def get(self, request):
-        """Метод get."""
         user = request.user
         ingredients = Ingredient.objects.select_related('ingredient').filter(
             recipe__purchase__user=user).values('ingredient__title',
@@ -314,8 +273,6 @@ class SendShopList(View):
 
 @method_decorator(login_required, name='dispatch')
 class Subscriptions(View):
-    """Добавление подписки на автора."""
-
     def post(self, request):
         """Метод post."""
         json_data = json.loads(request.body.decode())
@@ -331,7 +288,6 @@ class Subscriptions(View):
 
 
 def page_not_found(request, exception):
-    """Обработчик ошибки 404."""
     return render(request,
                   'recipes/misc/404.html',
                   {'path': request.path},
@@ -339,5 +295,4 @@ def page_not_found(request, exception):
 
 
 def server_error(request):
-    """Обработчик ошибки 500."""
     return render(request, 'recipes/misc/500.html', status=500)

@@ -5,8 +5,6 @@ from recipes.models import Product, Recipe, Tag
 
 
 class RecipeForm(forms.ModelForm):
-    """Форма для создания и редактирования рецепта."""
-
     tags = forms.ModelMultipleChoiceField(
         queryset=Tag.objects.all(),
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'tags__checkbox'}),
@@ -16,8 +14,6 @@ class RecipeForm(forms.ModelForm):
     description = forms.CharField(required=True)
 
     class Meta:
-        """Определяем для формы модель, необходимые поля и виджеты."""
-
         model = Recipe
         fields = (
             'name', 'tags', 'cook_time', 'ingredients', 'description',
@@ -35,7 +31,6 @@ class RecipeForm(forms.ModelForm):
         }
 
     def clean_ingredients(self):
-        """Валидатор для ингредиентов."""
         ingredient_names = self.data.getlist('nameIngredient')
         ingredient_units = self.data.getlist('unitsIngredient')
         ingredient_amounts = self.data.getlist('valueIngredient')
@@ -57,21 +52,18 @@ class RecipeForm(forms.ModelForm):
         return ingredients_clean
 
     def clean_name(self):
-        """Валидатор для названия рецептов."""
         data = self.cleaned_data['name']
         if len(data) == 0:
             raise forms.ValidationError('Добавьте название рецепта')
         return data
 
     def clean_description(self):
-        """Валидатор для описания рецептов рецептов."""
         data = self.cleaned_data['description']
         if len(data) == 0:
             raise forms.ValidationError('Добавьте описание рецепта')
         return data
 
     def clean_tags(self):
-        """Валидатор для описания рецептов рецептов."""
         data = self.cleaned_data['tags']
         if len(data) == 0:
             raise forms.ValidationError('Добавьте тег')

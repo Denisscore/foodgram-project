@@ -6,8 +6,6 @@ User = get_user_model()
 
 
 class Subscription(models.Model):
-    """Описание модели для реализации подписок"""
-
     user = models.ForeignKey(User, on_delete=models.CASCADE,
                              related_name='follower')
     author = models.ForeignKey(User, on_delete=models.CASCADE,
