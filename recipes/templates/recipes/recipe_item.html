@@ -1,0 +1,30 @@
+{% load user_filters %}
+{% load thumbnail %}
+{% load static %}
+{% csrf_token %}
+<div class="card" data-id="{{ recipe.id }}">
+    <link rel="stylesheet" href="{% static 'pages/index.css' %}">
+    <a href="{% url 'recipe_view' recipe_id=recipe.id %}" class="link" target="_blank">
+        {% thumbnail recipe.image  "364x240" crop="center" upscale=True as im %}
+            <img src="{{ im.url }}" alt="{{ recipe.name }}" class="card__image">
+        {% endthumbnail %}
+    </a>
+    <div class="card__body">
+        <a class="card__title link" href="{% url 'recipe_view' recipe_id=recipe.id %}" target="_blank">{{ recipe.name }}</a>
+        <ul class="card__items">
+            {% for tag in recipe.tags.all %}
+                <li class="card__item"><span class="badge badge_style_{{ tag|add_color }}">{{ tag.name }}</span></li>
+            {% endfor %}
+        </ul>
+        <div class="card__items card__items_column">
+            <p class="card__text"><span class="icon-time"></span>{{ recipe.cook_time }} мин.</p>
+            <p class="card__text"><span class="icon-user"></span> <a href="{% url 'profile_view' user_id=recipe.author.id %}" style="color: black">{% include 'recipes/name.html' with author=recipe.author %}</a></p>
+        </div>
+    </div>
+    <div class="card__footer">
+        {% if request.user.is_authenticated %}
+            {% include "recipes/button_purchases_index.html" with recipe=recipe user=request.user %}
+            {% include "recipes/favorite_button_star.html" with recipe=recipe %}
+        {% endif %}
+    </div>
+</div>

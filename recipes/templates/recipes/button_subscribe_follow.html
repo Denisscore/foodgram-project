@@ -1,0 +1,6 @@
+{% load user_filters %}
+{% if author|is_subscribe:user %}
+    <button class="button button_style_light-blue button_size_auto" name="subscribe" data-out="true">Отписаться</button>
+{% else %}
+    <button class="button button_style_light-blue button_size_auto" name="subscribe">Подписаться</button>
+{% endif %}
