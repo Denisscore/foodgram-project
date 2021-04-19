@@ -11,15 +11,15 @@
     <main class="main container">
         <div class="main__header">
             <h1 class="main__title">{{ title }}</h1>
-            {% include 'recipes/tags.html' %}
+            {% include 'includes/tags.html' %}
         </div>
         <div class="card-list">
             {% for recipe in page %}
-                {% include "recipes/recipe_item.html" with recipe=recipe %}
+                {% include "includes/recipe_item.html" with recipe=recipe %}
 
             {% endfor %}
         </div>
-        {% include 'recipes/paginator.html' with page=page paginator=paginator %}
+        {% include 'includes/paginator.html' with page=page paginator=paginator %}
     </main>
 {% endblock %}
 

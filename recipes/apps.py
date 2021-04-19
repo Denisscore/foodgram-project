@@ -1,4 +1,3 @@
-"""Файлом конфигурации для самого приложения api."""
 from django.apps import AppConfig
 
 

@@ -11,23 +11,23 @@
     <main class="main container">
         <div class="main__header">
             <h1 class="main__title">
-                {% include 'recipes/name.html' with author=author %}
+                {% include 'includes/name.html' with author=author %}
             </h1>
-            {% include 'recipes/tags.html' %}
+            {% include 'includes/tags.html' %}
         </div>
         {% if request.user.is_authenticated and request.user != author %}
             <div class="author-subscribe" data-author="{{ author.id }}">
                 <p style="padding: 0 0 2em 0;">
-                    {% include 'recipes/button_subscribe.html' with author=author user=request.user %}
+                    {% include 'includes/button_subscribe.html' with author=author user=request.user %}
                 </p>
             </div>
         {% endif %}
         <div class="card-list">
             {% for recipe in page %}
-                {% include "recipes/recipe_item.html" with recipe=recipe %}
+                {% include "includes/recipe_item.html" with recipe=recipe %}
             {% endfor %}
         </div>
-        {% include 'recipes/paginator.html' with page=page paginator=paginator %}
+        {% include 'includes/paginator.html' with page=page paginator=paginator %}
     </main>
 {% endblock %}
 

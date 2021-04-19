@@ -17,10 +17,10 @@
     </div>
     <div class="card-list">
         {% for author in page %}
-            {% include 'recipes/follow_item.html' with author=author %}
+            {% include 'includes/follow_item.html' with author=author %}
         {% endfor %}
     </div>
-    {% include 'recipes/paginator.html' with page=page paginator=paginator %}
+    {% include 'includes/paginator.html' with page=page paginator=paginator %}
         </main>
 {% endblock %}
 

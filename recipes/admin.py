@@ -1,4 +1,3 @@
-"""Описание страницы администратора для приложения Recipes."""
 from django.contrib import admin
 
 from recipes.models import Favorite, Ingredient, Product, Purchase, Recipe, Tag
@@ -33,7 +32,7 @@ class FavoriteAdmin(admin.ModelAdmin):
 
     def show_recipes(self, obj):
         recipes = obj.recipes.all()
-        return '\n'.join([recipe.name for recipe in recipes])
+        return ' '.join(recipes.values_list('name', flat=True))
 
 
 class PurchaseAdmin(admin.ModelAdmin):
@@ -42,7 +41,7 @@ class PurchaseAdmin(admin.ModelAdmin):
 
     def show_recipes(self, obj):
         recipes = obj.recipes.all()
-        return '\n'.join([recipe.name for recipe in recipes])
+        return ' '.join(recipes.values_list('name', flat=True))
 
 
 admin.site.register(Recipe, RecipeAdmin)

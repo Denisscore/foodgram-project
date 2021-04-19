@@ -10,7 +10,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 DEBUG = True
 SECRET_KEY = '&=-4pb%_b5=7j#6%_6rv-6v!#02$c)&a26)m^&9hhnn1axf%z&'
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+APPEND_SLASH=False
+
 
 
 
@@ -42,11 +44,9 @@ INSTALLED_APPS = [
 
 
 INTERNAL_IPS = [
-    # ...
     '*',
     '127.0.0.1',
     '10.130.0.14',
-    # ...
 ]
 
 MIDDLEWARE = [
@@ -82,7 +82,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
 
-# Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -101,7 +100,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
 LANGUAGE_CODE = 'ru-RU'
@@ -118,10 +116,8 @@ USE_TZ = True
 LOGIN_REDIRECT_URL = 'index_view'
 
 
-# Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-# Current site id
 SITE_ID = 1
 
 # AUTHENTICATION_BACKENDS = 'django.contrib.auth.backends.ModelBackend'
@@ -135,3 +131,4 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 VERSION = '1.00'
+APPEND_SLASH = False

@@ -21,7 +21,7 @@
                     <h1 class="single-card__title">{{ recipe.name }}</h1>
                     <div class="single-card__favorite">
                         {% if request.user.is_authenticated %}
-                            {% include "recipes/favorite_button_star.html" with recipe=recipe %}
+                            {% include "includes/favorite_button_star.html" with recipe=recipe %}
                             <div class="single-card__favorite-tooltip tooltip">Добавить в избранное</div>
                         {% endif %}
                     </div>
@@ -48,10 +48,10 @@
                 </div>
                 <ul class="single-card__items">
                 {% if request.user.is_authenticated %}
-                    <li class="single-card__item">{% include "recipes/button_purchases_single.html" with recipe=recipe user=request.user%}</li>
+                    <li class="single-card__item">{% include "includes/button_purchases_single.html" with recipe=recipe user=request.user%}</li>
                 {% endif %}
                 {% if request.user.is_authenticated and request.user != recipe.author %}
-                    <li class="single-card__item">{% include 'recipes/button_subscribe.html' with author=recipe.author user=request.user %}</li>
+                    <li class="single-card__item">{% include 'includes/button_subscribe.html' with author=recipe.author user=request.user %}</li>
                 {% endif %}
                 </ul>
                 <div class="single-card__section">

@@ -1,4 +1,3 @@
-"""view приложения Recipes."""
 import json
 from urllib.parse import unquote
 
@@ -61,7 +60,6 @@ def new_recipe_view(request):
 @method_decorator(login_required, name='dispatch')
 class GetIngredients(View):
     def get(self, request):
-        """Метод get."""
         query = unquote(request.GET.get('query'))
         data = list(
             Product.objects.filter(title__startswith=query).values('title',
@@ -99,34 +97,33 @@ def recipe_item_view(request, recipe_id):
 
 @login_required(login_url='login')
 @require_http_methods(['GET', 'POST'])
-def recipe_edit_view(request, recipe_id):
-    recipe = get_object_or_404(Recipe, id=recipe_id)
-    if request.user != recipe.author:
-        return redirect('recipe_view', recipe_id=recipe_id)
-    if request.method == 'POST':
-        form = RecipeForm(request.POST or None, files=request.FILES or None,
-                          instance=recipe)
-        if form.is_valid():
-            recipe.ingredients.remove()
-            recipe.recipe_amount.all().delete()
-            recipe = form.save(commit=False)
-            recipe.author = request.user
-            ingredients = form.cleaned_data['ingredients']
-            form.cleaned_data['ingredients'] = []
-            form.save()
-            Ingredient.objects.bulk_create(
-                get_ingredients_from_form(ingredients, recipe))
-            return redirect('recipe_view', recipe_id=recipe_id)
-
-    form = RecipeForm(instance=recipe)
-    context = {
-        'recipe_id': recipe_id,
-        'page_title': 'Редактирование рецепта',
-        'button': 'Сохранить',
-        'form': form,
-        'recipe': recipe
-    }
-    return render(request, 'recipes/formRecipe.html', context)
+def recipe_edit_view(request, recipe_id): 
+    recipe = get_object_or_404(Recipe, id=recipe_id) 
+    if request.user != recipe.author: 
+        return redirect('recipe_view', recipe_id=recipe_id) 
+    form = RecipeForm(request.POST or None, files=request.FILES or None, 
+                instance=recipe) 
+    if form.is_valid(): 
+        recipe.ingredients.remove() 
+        recipe.amounts.all().delete() 
+        recipe = form.save(commit=False) 
+        recipe.author = request.user 
+        ingredients = form.cleaned_data['ingredients'] 
+        form.cleaned_data['ingredients'] = [] 
+        form.save() 
+        Ingredient.objects.bulk_create( 
+            get_ingredients_from_form(ingredients, recipe)) 
+        return redirect('recipe_view', recipe_id=recipe_id) 
+ 
+    form = RecipeForm(instance=recipe) 
+    context = { 
+        'recipe_id': recipe_id, 
+        'page_title': 'Редактирование рецепта', 
+        'button': 'Сохранить', 
+        'form': form, 
+        'recipe': recipe 
+    } 
+    return render(request, 'recipes/formRecipe.html', context) 
 
 
 @login_required(login_url='login')
@@ -160,10 +157,7 @@ class SubscriptionDelete(View):
         follow = Subscription.objects.filter(user=request.user,
                                              author=author)
         quantity, obj_subscription = follow.delete()
-        if quantity == 0:
-            data = {'success': False}
-        else:
-            data = {'success': True}
+        data = {'success': False} if quantity == 0 else {'success': True}
         return JsonResponse(data)
 
 
@@ -184,7 +178,7 @@ class FavoriteView(View):
 
     def post(self, request):
         json_data = json.loads(request.body.decode())
-        recipe_id = json_data['id']
+        recipe_id = json_data.get('id')
         recipe = get_object_or_404(Recipe, id=recipe_id)
         data = {'success': True}
         favorite, created = Favorite.favorite.get_or_create(user=request.user)
@@ -199,7 +193,6 @@ class FavoriteView(View):
 @method_decorator(login_required, name='dispatch')
 class FavoriteDelete(View):
     def delete(self, request, recipe_id):
-        """Метод delete."""
         recipe = get_object_or_404(Recipe, id=recipe_id)
         favorite = Favorite.favorite.filter(user=request.user, recipes=recipe)
         quantity, obj_favorite = favorite.delete()
@@ -222,7 +215,7 @@ class PurchaseView(View):
 
     def post(self, request):
         json_data = json.loads(request.body.decode())
-        recipe_id = json_data['id']
+        recipe_id = json_data.get('id')
         recipe = get_object_or_404(Recipe, id=recipe_id)
         purchase, created = Purchase.purchase.get_or_create(user=request.user)
         data = {'success': True}
@@ -274,9 +267,8 @@ class SendShopList(View):
 @method_decorator(login_required, name='dispatch')
 class Subscriptions(View):
     def post(self, request):
-        """Метод post."""
         json_data = json.loads(request.body.decode())
-        author = get_object_or_404(User, id=json_data['id'])
+        author = get_object_or_404(User, id=json_data.get('id'))
         is_exist = Subscription.objects.filter(
             user=request.user, author=author).exists()
         data = {'success': True}
@@ -285,14 +277,3 @@ class Subscriptions(View):
         else:
             Subscription.objects.create(user=request.user, author=author)
         return JsonResponse(data)
-
-
-def page_not_found(request, exception):
-    return render(request,
-                  'recipes/misc/404.html',
-                  {'path': request.path},
-                  status=404)
-
-
-def server_error(request):
-    return render(request, 'recipes/misc/500.html', status=500)

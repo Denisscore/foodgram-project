@@ -1,4 +1,3 @@
-"""Модели приложения Recipes."""
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MinValueValidator
 from django.db import models
@@ -37,7 +36,7 @@ class RecipeManager(models.Manager):
 class Recipe(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE,
                                verbose_name='Автор рецепта',
-                               related_name='recipe_author')
+                               related_name='recipes')
 
     name = models.CharField(max_length=255,
                             verbose_name='Название рецепта',
@@ -53,7 +52,7 @@ class Recipe(models.Model):
 
     ingredients = models.ManyToManyField(Product,
                                          through='Ingredient',
-                                         related_name='recipe_ingredients',
+                                         related_name='ingredients',
                                          blank=True)
 
     cook_time = models.PositiveIntegerField(verbose_name='Время приготовления',
@@ -75,13 +74,15 @@ class Recipe(models.Model):
 
 class Ingredient(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE,
-                               related_name='recipe_amount')
+                               related_name='amounts')
     ingredient = models.ForeignKey(Product, on_delete=models.CASCADE)
     amount = models.PositiveIntegerField(verbose_name='Количество ингредиента')
 
     class Meta:
-        unique_together = ('ingredient', 'amount', 'recipe')
-
+        constraints = [
+            models.UniqueConstraint(fields=['ingredient', 'amount', 'recipe'], name="unique_ingridients")
+        ]
+        
     def __str__(self):
         return '{amount}'.format(amount=self.amount)
 
@@ -90,13 +91,13 @@ class PurchaseManager(models.Manager):
     def counter(self, user):
         try:
             return super().get_queryset().get(user=user).recipes.count()
-        except ObjectDoesNotExist:
+        except Recipe.DoesNotExist:
             return 0
 
     def get_purchases_list(self, user):
         try:
             return super().get_queryset().get(user=user).recipes.all()
-        except ObjectDoesNotExist:
+        except Recipe.DoesNotExist:
             return []
 
 

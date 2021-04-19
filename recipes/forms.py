@@ -1,4 +1,3 @@
-"""Формы приложения Recipes."""
 from django import forms
 
 from recipes.models import Product, Recipe, Tag
@@ -35,33 +34,21 @@ class RecipeForm(forms.ModelForm):
         ingredient_units = self.data.getlist('unitsIngredient')
         ingredient_amounts = self.data.getlist('valueIngredient')
         ingredients_clean = []
-        for ingredient in zip(ingredient_names, ingredient_units,
+        for name, unit, amount in zip(ingredient_names, ingredient_units,
                               ingredient_amounts):
-            if not int(ingredient[2]) > 0:
+            if not int(amount) > 0:
                 raise forms.ValidationError('Количество ингредиентов должно '
                                             'быть положительным и не нулевым')
-            elif not Product.objects.filter(title=ingredient[0]).exists():
+            elif not Product.objects.filter(title=name).exists():
                 raise forms.ValidationError(
                     'Ингредиенты должны быть из списка')
             else:
-                ingredients_clean.append({'title': ingredient[0],
-                                          'unit': ingredient[1],
-                                          'amount': ingredient[2]})
+                ingredients_clean.append({'title': name,
+                                          'unit': unit,
+                                          'amount': amount})
         if len(ingredients_clean) == 0:
             raise forms.ValidationError('Добавьте ингредиент')
         return ingredients_clean
-
-    def clean_name(self):
-        data = self.cleaned_data['name']
-        if len(data) == 0:
-            raise forms.ValidationError('Добавьте название рецепта')
-        return data
-
-    def clean_description(self):
-        data = self.cleaned_data['description']
-        if len(data) == 0:
-            raise forms.ValidationError('Добавьте описание рецепта')
-        return data
 
     def clean_tags(self):
         data = self.cleaned_data['tags']
