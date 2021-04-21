@@ -1,5 +1,4 @@
 from django.contrib.auth import get_user_model
-
 from django.db import models
 
 User = get_user_model()
@@ -13,7 +12,11 @@ class Subscription(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['user', 'author'], name="unique_together")
+            models.UniqueConstraint(fields=[
+                'user',
+                'author'
+                ],
+                name="unique_together")
         ]
     def __str__(self):
         return f'{self.user} подписан на {self.author}.'

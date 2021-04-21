@@ -1,4 +1,5 @@
 from django import template
+
 from foodgram.settings import VERSION
 from recipes.models import Favorite, Purchase, Tag
 from users.models import Subscription

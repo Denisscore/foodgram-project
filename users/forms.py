@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth import authenticate, get_user_model, login
+
 from recipes.tasks import send_verification_email
 
 User = get_user_model()

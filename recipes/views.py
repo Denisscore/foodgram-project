@@ -157,7 +157,7 @@ class SubscriptionDelete(View):
         follow = Subscription.objects.filter(user=request.user,
                                              author=author)
         quantity, obj_subscription = follow.delete()
-        data = {'success': False} if quantity == 0 else {'success': True}
+        data = {'success': quantity == 0}
         return JsonResponse(data)
 
 
@@ -196,10 +196,7 @@ class FavoriteDelete(View):
         recipe = get_object_or_404(Recipe, id=recipe_id)
         favorite = Favorite.favorite.filter(user=request.user, recipes=recipe)
         quantity, obj_favorite = favorite.delete()
-        if quantity == 0:
-            data = {'success': False}
-        else:
-            data = {'success': True}
+        data = {'success': quantity == 0}
         return JsonResponse(data)
 
 
@@ -235,7 +232,7 @@ class PurchaseDelete(View):
         data = {'success': True}
         try:
             purchase = Purchase.purchase.get(user=request.user)
-        except ObjectDoesNotExist:
+        except Resipe.DoesNotExist:
             data['success'] = False
         if not purchase.recipes.filter(id=recipe_id).exists():
             data['success'] = False

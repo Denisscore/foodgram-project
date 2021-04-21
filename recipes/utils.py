@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 
-from recipes.models import Product, Ingredient
+from recipes.models import Ingredient, Product
 
 
 def get_ingredients_from_form(ingredients, recipe):

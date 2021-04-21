@@ -52,7 +52,7 @@ class Recipe(models.Model):
 
     ingredients = models.ManyToManyField(Product,
                                          through='Ingredient',
-                                         related_name='ingredients',
+                                         related_name='recipes',
                                          blank=True)
 
     cook_time = models.PositiveIntegerField(verbose_name='Время приготовления',
@@ -80,9 +80,14 @@ class Ingredient(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['ingredient', 'amount', 'recipe'], name="unique_ingridients")
+            models.UniqueConstraint(fields=[
+                'ingredient',
+                'amount',
+                'recipe'
+                ],
+                name="unique_ingridients")
         ]
-        
+
     def __str__(self):
         return '{amount}'.format(amount=self.amount)
 
@@ -122,7 +127,7 @@ class FavoriteManager(models.Manager):
                 return recipes.prefetch_related(
                     'author', 'tags'
                 ).all()
-        except ObjectDoesNotExist:
+        except Recipe.DoesNotExist:
             return []
 
 

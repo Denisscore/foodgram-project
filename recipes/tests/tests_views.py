@@ -1,14 +1,12 @@
 import csv
 
+import factory
 from django.test import Client, TestCase
 from django.urls import reverse
 
-import factory
-
+from recipes.models import (Favorite, Ingredient, Product, Purchase, Recipe,
+                            Tag, User)
 from users.models import Subscription
-
-from recipes.models import Favorite, \
-    Ingredient, Product, Purchase, Recipe, Tag, User
 
 
 def _create_recipe(author, name, tag):

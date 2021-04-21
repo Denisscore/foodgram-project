@@ -1,7 +1,8 @@
 import os
 from pathlib import Path
+
 import environ
-from dotenv import load_dotenv 
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -11,7 +12,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEBUG = True
 SECRET_KEY = '&=-4pb%_b5=7j#6%_6rv-6v!#02$c)&a26)m^&9hhnn1axf%z&'
 ALLOWED_HOSTS = ['*']
-APPEND_SLASH=False
+APPEND_SLASH = False
 
 
 
@@ -131,4 +132,3 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 VERSION = '1.00'
-APPEND_SLASH = False
