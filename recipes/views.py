@@ -14,7 +14,6 @@ from django.views.decorators.http import require_http_methods
 from foodgram.settings import RECIPES_ON_PAGE
 from recipes.forms import RecipeForm
 from recipes.models import Favorite, Ingredient, Product, Purchase, Recipe
-from recipes.utils import get_ingredients_from_form
 from users.models import Subscription, User
 
 
@@ -42,19 +41,14 @@ class IndexView(View):
 def new_recipe_view(request):
     form = RecipeForm(request.POST or None, files=request.FILES or None)
     if form.is_valid():
-        recipe = form.save(commit=False)
-        recipe.author = request.user
-        ingredients = form.cleaned_data['ingredients']
-        form.cleaned_data['ingredients'] = []
+        form.instance.author = request.user
         form.save()
-        Ingredient.objects.bulk_create(
-            get_ingredients_from_form(ingredients, recipe))
-        return redirect('index_view')
-    context = {'page_title': 'Создание рецепта',
-               'button': 'Создать рецепт',
-               'form': form,
-               }
-    return render(request, 'recipes/formRecipe.html', context)
+        return redirect('index_view') 
+    context = {'page_title': 'Создание рецепта', 
+               'button': 'Создать рецепт', 
+               'form': form, 
+               } 
+    return render(request, 'recipes/formRecipe.html', context) 
 
 
 @method_decorator(login_required, name='dispatch')
@@ -97,33 +91,25 @@ def recipe_item_view(request, recipe_id):
 
 @login_required(login_url='login')
 @require_http_methods(['GET', 'POST'])
-def recipe_edit_view(request, recipe_id): 
-    recipe = get_object_or_404(Recipe, id=recipe_id) 
-    if request.user != recipe.author: 
-        return redirect('recipe_view', recipe_id=recipe_id) 
-    form = RecipeForm(request.POST or None, files=request.FILES or None, 
-                instance=recipe) 
-    if form.is_valid(): 
-        recipe.ingredients.remove() 
-        recipe.amounts.all().delete() 
-        recipe = form.save(commit=False) 
-        recipe.author = request.user 
-        ingredients = form.cleaned_data['ingredients'] 
-        form.cleaned_data['ingredients'] = [] 
-        form.save() 
-        Ingredient.objects.bulk_create( 
-            get_ingredients_from_form(ingredients, recipe)) 
-        return redirect('recipe_view', recipe_id=recipe_id) 
- 
-    form = RecipeForm(instance=recipe) 
-    context = { 
-        'recipe_id': recipe_id, 
-        'page_title': 'Редактирование рецепта', 
-        'button': 'Сохранить', 
-        'form': form, 
-        'recipe': recipe 
-    } 
-    return render(request, 'recipes/formRecipe.html', context) 
+def recipe_edit_view(request, recipe_id):
+    recipe = get_object_or_404(Recipe, id=recipe_id)
+    if request.user != recipe.author:
+        return redirect('recipe_view', recipe_id=recipe_id)
+    form = RecipeForm(request.POST or None, files=request.FILES or None,
+                      instance=recipe)
+    if form.is_valid():
+        form.save()
+        return redirect('recipe_view', recipe_id=recipe_id)
+
+    form = RecipeForm(instance=recipe)
+    context = {
+        'recipe_id': recipe_id,
+        'page_title': 'Редактирование рецепта',
+        'button': 'Сохранить',
+        'form': form,
+        'recipe': recipe
+    }
+    return render(request, 'recipes/formRecipe.html', context)
 
 
 @login_required(login_url='login')
@@ -232,7 +218,7 @@ class PurchaseDelete(View):
         data = {'success': True}
         try:
             purchase = Purchase.purchase.get(user=request.user)
-        except Resipe.DoesNotExist:
+        except Recipe.DoesNotExist:
             data['success'] = False
         if not purchase.recipes.filter(id=recipe_id).exists():
             data['success'] = False
