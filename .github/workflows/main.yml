@@ -98,14 +98,3 @@ jobs:
             sudo docker rmi romulinn2575/foodgram_project -f
             sudo docker pull romulinn2575/foodgram_project:latest
             sudo docker-compose up --force-recreate -d web
-
-  send_message:
-    runs-on: ubuntu-latest
-    needs: deploy
-    steps:
-      - name: send message
-        uses: appleboy/telegram-action@master
-        with:
-          to: ${{ secrets.TELEGRAM_CHAT_ID }}
-          token: ${{ secrets.TELEGRAM_TOKEN }}
-          message: ${{ github.workflow }} Развернут на http://84.252.137.68/.
