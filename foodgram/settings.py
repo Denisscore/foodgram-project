@@ -9,7 +9,7 @@ load_dotenv()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-DEBUG = True
+DEBUG = False
 SECRET_KEY = '&=-4pb%_b5=7j#6%_6rv-6v!#02$c)&a26)m^&9hhnn1axf%z&'
 ALLOWED_HOSTS = ['*']
 APPEND_SLASH = False
@@ -47,7 +47,7 @@ INSTALLED_APPS = [
 INTERNAL_IPS = [
     '*',
     '127.0.0.1',
-    '10.130.0.14',
+    '10.129.0.7',
 ]
 
 MIDDLEWARE = [

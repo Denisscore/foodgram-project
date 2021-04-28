@@ -57,9 +57,8 @@ class RecipeForm(forms.ModelForm):
             raise forms.ValidationError('Добавьте тег')
         return data
 
-    def save(self):
+    '''def save(self):
         self.instance = super().save(commit=False)
-        self.instance.save()
         self.instance.ingredients.remove()
         self.instance.amounts.all().delete()
         ingredients = self.cleaned_data['ingredients']
@@ -67,4 +66,4 @@ class RecipeForm(forms.ModelForm):
         Ingredient.objects.bulk_create(
             get_ingredients_from_form(ingredients, self.instance))
         self.save_m2m()
-        return self.instance
+        return self.instance'''

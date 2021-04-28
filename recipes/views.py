@@ -14,6 +14,7 @@ from django.views.decorators.http import require_http_methods
 from foodgram.settings import RECIPES_ON_PAGE
 from recipes.forms import RecipeForm
 from recipes.models import Favorite, Ingredient, Product, Purchase, Recipe
+from recipes.utils import get_ingredients_from_form
 from users.models import Subscription, User
 
 
@@ -40,9 +41,15 @@ class IndexView(View):
 @require_http_methods(['GET', 'POST'])
 def new_recipe_view(request):
     form = RecipeForm(request.POST or None, files=request.FILES or None)
+
     if form.is_valid():
-        form.instance.author = request.user
+        recipe = form.save(commit=False)
+        recipe.author = request.user
+        ingredients = form.cleaned_data['ingredients']
+        form.cleaned_data['ingredients'] = []
         form.save()
+        Ingredient.objects.bulk_create(
+            get_ingredients_from_form(ingredients, recipe))
         return redirect('index_view') 
     context = {'page_title': 'Создание рецепта', 
                'button': 'Создать рецепт', 
@@ -98,8 +105,26 @@ def recipe_edit_view(request, recipe_id):
     form = RecipeForm(request.POST or None, files=request.FILES or None,
                       instance=recipe)
     if form.is_valid():
+        recipe.ingredients.remove()
+        recipe.amounts.all().delete()
+        recipe = form.save(commit=False)
+        recipe.author = request.user
+        ingredients = form.cleaned_data['ingredients']
+        form.cleaned_data['ingredients'] = []
         form.save()
+        Ingredient.objects.bulk_create(
+            get_ingredients_from_form(ingredients, recipe))
         return redirect('recipe_view', recipe_id=recipe_id)
+
+    form = RecipeForm(instance=recipe)
+    context = {
+        'recipe_id': recipe_id,
+        'page_title': 'Редактирование рецепта',
+        'button': 'Сохранить',
+        'form': form,
+        'recipe': recipe
+    }
+    return render(request, 'recipes/formRecipe.html', context)
 
     form = RecipeForm(instance=recipe)
     context = {
