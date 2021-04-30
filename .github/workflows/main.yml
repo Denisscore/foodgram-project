@@ -80,6 +80,18 @@ jobs:
           pip install dump-env==1.2.0
           dump-env --template=.env.template --prefix='SECRET_' > .env
 
+      - name: Installing docker
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            sudo apt install docker.io docker-compose -y
+            sudo systemctl start docker
+            sudo systemctl enable docker
+            sudo apt-get update -y
+
       - name: Executing remote ssh commands to deploy
         uses: appleboy/ssh-action@master
         with:
