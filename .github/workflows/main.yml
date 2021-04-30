@@ -74,8 +74,7 @@ jobs:
           rm: true
           script: |
             cd code/
-            echo 'DB_ENGINE= ${{ secrets.DB_ENGINE }}
-                  DB_NAME= ${{ secrets.DB_NAME }}
+            echo 'DB_NAME= ${{ secrets.DB_NAME }}
                   POSTGRES_USER= ${{ secrets.POSTGRES_USER }}
                   POSTGRES_PASSWORD= ${{ secrets.POSTGRES_PASSWORD }}
                   DB_HOST= ${{ secrets.DB_HOST }}
