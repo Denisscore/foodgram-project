@@ -12,6 +12,7 @@ services:
     container_name: postgres
     environment:
       POSTGRES_PASSWORD: 'postgres'
+      POSTGRES_USER: 'postgres'
     volumes:
       - ./postgres_data:/var/lib/postgresql/data/
     env_file:
