@@ -6,12 +6,12 @@ volumes:
   media_volume:
 
 services:
-db:
-  image: postgres:12.4
-  volumes:
-    - postgres_data:/var/lib/postgresql/data/
-  env_file:
-    - ./.env
+  db:
+    image: postgres:12.4
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env
 
   redis:
     image: redis:6.0.10
