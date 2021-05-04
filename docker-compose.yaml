@@ -44,6 +44,6 @@ services:
       - ./media_volume:/code/media
     depends_on:
       - db
-      - foodgram
+      - web
     ports:
       - "80:80"
