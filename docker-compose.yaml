@@ -45,5 +45,3 @@ services:
     depends_on:
       - db
       - web
-    ports:
-      - "80:80"
