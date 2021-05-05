@@ -13,14 +13,6 @@ services:
     env_file:
       - ./.env
 
-  redis:
-    image: redis:6.0.10
-    container_name: redis
-    env_file:
-      - ./.env
-    ports:
-      - "6379:6379"
-
   web:
 #    build: .
     image: romulinn2575/foodgram_project:latest
