@@ -14,9 +14,7 @@ services:
       - ./.env
 
   web:
-#    build: .
     image: romulinn2575/foodgram_project:latest
-    container_name: foodgram
     restart: always
     volumes:
       - ./static_volume:/code/static/
@@ -27,9 +25,12 @@ services:
       - ./.env
 
   nginx:
-    image: nginx:latest
-    container_name: webserver
+    image: nginx:1.19.6
+    ports:
+      - '80:80'
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
       - ./static_volume:/code/static
       - ./media_volume:/code/media
+    depends_on:
+      - web
