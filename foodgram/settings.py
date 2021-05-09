@@ -42,11 +42,7 @@ INSTALLED_APPS = [
 ]
 
 
-INTERNAL_IPS = [
-    '*',
-    '127.0.0.1',
-    '10.129.0.7',
-]
+INTERNAL_IPS = ['*']
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
