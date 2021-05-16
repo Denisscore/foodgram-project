@@ -62,7 +62,7 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
-          source: './.env, nginx/default.conf, ./docker-compose.yaml'
+          source: 'nginx/default.conf, ./docker-compose.yaml'
           target: 'code'
 
       - name: Create env file
