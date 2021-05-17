@@ -83,7 +83,7 @@ jobs:
             cd ~
             cd ./code
             sudo docker-compose down
-            sudo docker rmi korsakovpv/foodgram_project -f
-            sudo docker pull korsakovpv/foodgram_project
+            sudo docker rmi romulin/foodgram_project -f
+            sudo docker pull romulin/foodgram_project
             sudo docker-compose up --force-recreate -d
             sudo docker-compose exec -T -d web celery -A foodgram worker -l INFO
