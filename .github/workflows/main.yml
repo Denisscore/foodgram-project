@@ -42,8 +42,9 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
+          port: 22
           source: './.env, nginx/default.conf, ./docker-compose.yaml'
-          target: 'code'
+          target: '/home/romulin/code'
 
       - name: Create env file
         uses: appleboy/ssh-action@master
@@ -81,6 +82,8 @@ jobs:
           script: |
             cd ~
             cd ./code
-            sudo docker rmi romulinn2575/foodgram_project -f
-            sudo docker pull romulinn2575/foodgram_project:latest
-            sudo docker-compose up --force-recreate -d web
+            sudo docker-compose down
+            sudo docker rmi korsakovpv/foodgram_project -f
+            sudo docker pull korsakovpv/foodgram_project
+            sudo docker-compose up --force-recreate -d
+            sudo docker-compose exec -T -d web celery -A foodgram worker -l INFO
