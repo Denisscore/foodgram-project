@@ -16,16 +16,13 @@ services:
   web:
     image: romulinn2575/foodgram_project:latest
     restart: always
-    command: gunicorn foodgram.wsgi:application --bind 0.0.0.0:8000
-    ports:
-      - "8000:8000"
     volumes:
       - ./static_volume:/code/static/
       - ./media_volume:/code/media/
-    depends_on:
-      - db
     env_file:
       - ./.env
+    depends_on:
+      - db
 
   nginx:
     image: nginx:1.19.6
