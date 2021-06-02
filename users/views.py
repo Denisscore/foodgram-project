@@ -1,15 +1,18 @@
+from django.contrib.auth import authenticate, login
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 
-from .forms import CreationForm
+from users.forms import SignupForm
 
 
 class SignUp(CreateView):
-    form_class = CreationForm
+    form_class = SignupForm
     success_url = reverse_lazy('index_view')
     template_name = 'registration/signup.html'
 
-    def get_form_kwargs(self):
-        form_kwargs = super().get_form_kwargs()
-        form_kwargs['request'] = self.request
-        return form_kwargs
+    def form_valid(self, form):
+        valid = super(SignUp, self).form_valid(form)
+        username, password = form.cleaned_data.get('username'), form.cleaned_data.get('password')
+        new_user = authenticate(username=username, password=password)
+        login(self.request, new_user)
+        return valid

@@ -18,5 +18,6 @@ class Subscription(models.Model):
                 ],
                 name="unique_together")
         ]
+
     def __str__(self):
         return f'{self.user} подписан на {self.author}.'
