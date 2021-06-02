@@ -24,7 +24,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: romulinn2575/foodgram_project:latest
+          tags: romulinn2575/foodgram:latest
 
   deploy:
     runs-on: ubuntu-latest
