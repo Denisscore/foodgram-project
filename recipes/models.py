@@ -102,7 +102,7 @@ class PurchaseManager(models.Manager):
     def get_purchases_list(self, user):
         try:
             return super().get_queryset().get(user=user).recipes.all()
-        except Recipe.DoesNotExist:
+        except:
             return []
 
 
@@ -127,7 +127,7 @@ class FavoriteManager(models.Manager):
                 return recipes.prefetch_related(
                     'author', 'tags'
                 ).all()
-        except Recipe.DoesNotExist:
+        except:
             return []
 
 
