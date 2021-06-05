@@ -2,7 +2,7 @@
 
 # **Foodgram-project**
 
-http://84.252.133.224/
+http://130.193.35.203/
 
 Дипломный проект программы Яндекс.Практикум **[Python-разработчик](https://praktikum.yandex.ru/backend-developer/)**
 

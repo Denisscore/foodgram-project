@@ -50,12 +50,12 @@ def new_recipe_view(request):
         form.save()
         Ingredient.objects.bulk_create(
             get_ingredients_from_form(ingredients, recipe))
-        return redirect('index_view') 
-    context = {'page_title': 'Создание рецепта', 
-               'button': 'Создать рецепт', 
-               'form': form, 
-               } 
-    return render(request, 'recipes/formRecipe.html', context) 
+        return redirect('index_view')
+    context = {'page_title': 'Создание рецепта',
+               'button': 'Создать рецепт',
+               'form': form,
+               }
+    return render(request, 'recipes/formRecipe.html', context)
 
 
 @method_decorator(login_required, name='dispatch')
@@ -178,14 +178,18 @@ class FavoriteView(View):
         tags = request.GET.getlist('tag')
         user = request.user
         recipes = Favorite.favorite.get_tag_filtered(user, tags)
-        paginator = Paginator(recipes, RECIPES_ON_PAGE)
-        page_number = request.GET.get('page')
-        page = paginator.get_page(page_number)
-        context = {'title': 'Избранное',
-                   'page': page,
-                   'paginator': paginator
-                   }
-        return render(request, 'recipes/indexAuth.html', context)
+        if recipes != []:
+            print (recipes)
+            paginator = Paginator(recipes, RECIPES_ON_PAGE)
+            page_number = request.GET.get('page')
+            page = paginator.get_page(page_number)
+            context = {'title': 'Избранное',
+                       'page': page,
+                       'paginator': paginator
+                       }
+            return render(request, 'recipes/indexAuth.html', context)
+        else:
+            return render(request, 'recipes/indexAuth.html')
 
     def post(self, request):
         json_data = json.loads(request.body.decode())

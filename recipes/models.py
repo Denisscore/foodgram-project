@@ -84,7 +84,7 @@ class Ingredient(models.Model):
                 'ingredient',
                 'amount',
                 'recipe'
-                ],
+            ],
                 name="unique_ingridients")
         ]
 
@@ -102,7 +102,7 @@ class PurchaseManager(models.Manager):
     def get_purchases_list(self, user):
         try:
             return super().get_queryset().get(user=user).recipes.all()
-        except Recipe.DoesNotExist:
+        except:
             return []
 
 
@@ -127,12 +127,11 @@ class FavoriteManager(models.Manager):
                 return recipes.prefetch_related(
                     'author', 'tags'
                 ).all()
-        except Recipe.DoesNotExist:
+        except:
             return []
 
 
 class Favorite(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     recipes = models.ManyToManyField(Recipe)
-
     favorite = FavoriteManager()
