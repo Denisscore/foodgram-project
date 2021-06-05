@@ -9,7 +9,7 @@ class Command(BaseCommand):
     help = 'Load product data to database'
 
     def handle(self, *args, **options):
-        with open('recipes/fixtures/ingredients.csv') as isfile:
+        with open('recipes/fixtures/ingredients.csv', encoding='utf-8') as isfile:
             reader = csv.reader(isfile)
             for row in reader:
                 title, unit = row
