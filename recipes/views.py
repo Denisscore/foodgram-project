@@ -90,8 +90,10 @@ class ProfileView(View):
 @require_http_methods(["GET"])
 def recipe_item_view(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id)
+    ingredient = recipe.ingredients.all()
     context = {
         'recipe': recipe,
+        'ingredients': ingredient,
     }
     return render(request, 'recipes/singlePage.html', context)
 
@@ -168,7 +170,10 @@ class SubscriptionDelete(View):
         follow = Subscription.objects.filter(user=request.user,
                                              author=author)
         quantity, obj_subscription = follow.delete()
-        data = {'success': quantity == 0}
+        if quantity == 0:
+            data = {'success': False}
+        else:
+            data = {'success': True}
         return JsonResponse(data)
 
 
@@ -178,8 +183,7 @@ class FavoriteView(View):
         tags = request.GET.getlist('tag')
         user = request.user
         recipes = Favorite.favorite.get_tag_filtered(user, tags)
-        if recipes != []:
-            print (recipes)
+        if recipes !=[]:
             paginator = Paginator(recipes, RECIPES_ON_PAGE)
             page_number = request.GET.get('page')
             page = paginator.get_page(page_number)
@@ -209,9 +213,9 @@ class FavoriteView(View):
 class FavoriteDelete(View):
     def delete(self, request, recipe_id):
         recipe = get_object_or_404(Recipe, id=recipe_id)
-        favorite = Favorite.favorite.filter(user=request.user, recipes=recipe)
-        quantity, obj_favorite = favorite.delete()
-        data = {'success': quantity == 0}
+        favorite = get_object_or_404(Favorite, user=request.user, recipes=recipe)
+        favorite.recipes.remove(recipe)
+        data = {'success': True}
         return JsonResponse(data)
 
 

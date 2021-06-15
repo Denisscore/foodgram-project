@@ -96,7 +96,7 @@ class PurchaseManager(models.Manager):
     def counter(self, user):
         try:
             return super().get_queryset().get(user=user).recipes.count()
-        except Recipe.DoesNotExist:
+        except:
             return 0
 
     def get_purchases_list(self, user):

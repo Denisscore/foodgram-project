@@ -1,0 +1,23 @@
+{% extends 'recipes/base.html' %}
+{% load static %}
+{% block title %} об авторе {% endblock %}
+{% block styles %}
+    {% load static %}
+        <link rel="stylesheet" href="{% static 'pages/index.css' %}">
+{% endblock %}
+{% block header %}
+Об авторе
+{% endblock %}
+{% block content %}
+    <main class="main container">
+        <div class="custom-center-block">
+            <p class="custom-text-block">Проет написан студентом Яндекс Практикума, превозмогая боль и страдания...</p>
+            <div class="custom-text-block">
+                <a href="https://github.com/Denisscore" target="_blank">Мой Github-профайл</a>
+            </div>
+            <div class="custom-button-block">
+                <a href="{% url 'index_view' %}" class="button button_style_blue">Перейти на главную</a>
+            </div>
+        </div>
+    </main>
+{% endblock %}
