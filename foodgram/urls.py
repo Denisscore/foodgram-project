@@ -13,7 +13,6 @@ urlpatterns = [
     path("about/", include("about.urls", namespace='about')),
 ]
 
-
 if settings.DEBUG:
     import debug_toolbar
 
