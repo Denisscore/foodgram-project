@@ -31,11 +31,11 @@
 
                     <div name=tags class="tags">
                         {% for tag in all_tags|all_tags %}
-                            <div class="tags__item">
-                            <input type="checkbox" name="tags" value="{{ tag.slug }}" class="tags__checkbox tags__checkbox_style_{{ tag|add_color }}" id="{{ tag.slug }}">
-
-                            <label name="checkbox_label" for="id_id_tags_0" class="tags__label">{{ tag.name }}</label>
-                            </div>
+                                <div class="tags__item">
+                                    <input type="checkbox" name="tags" value="{{ tag.slug }}" class="tags__checkbox tags__checkbox_style_{{ tag|add_color }}" id="{{ tag.slug }}"
+                                        {% if tag in recipe.tags.all %} checked {% endif %}>
+                                    <label name="checkbox_label" for="id_id_tags_0" class="tags__label">{{ tag.name }}</label>
+                                </div>
                         {% endfor %}
                     </div>
 
